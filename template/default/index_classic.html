@@ -1,0 +1,186 @@
+<!--{php}
+$index_cat = get_categories_tree(0,'category');
+if(is_array($index_cat)){
+    foreach($index_cat as $firstcatkey => $firstcatval){
+        $incatids = NULL;
+        $incatids = get_children($firstcatval['catid']);
+        $query	= $db -> query("SELECT a.catname,a.dir_typename,a.id,a.userid,a.catid,a.title,a.ifred,a.ifbold,a.begintime,a.cityid FROM `{$db_mymps}information` AS a WHERE $incatids AND (a.info_level = 1 OR a.info_level = 2) {$city_limit} ORDER BY a.begintime DESC LIMIT 0,".$tpl_index['foreachinfo']);
+        $index_cat[$firstcatval['catid']]['information'] = array();
+        while($irow   = $db -> fetchRow($query)){
+            $arr['id'] 	      = $irow['id'];
+            $arr['title'] 	  = $irow['title'];
+            $arr['begintime'] = $irow['begintime'];
+            $arr['catname']	  = $irow['catname'];
+            $arr['ifred']	  = $irow['ifred'];
+            $arr['ifbold']	  = $irow['ifbold'];
+            $arr['caturi']	  = Rewrite('category',array('dir_typename'=>$irow['dir_typename'],'catid'=>$irow['catid'],'domain'=>$city['domain']));
+            $arr['uri']		  = Rewrite('info',array('id'=>$irow['id'],'cityid'=>$irow['cityid'],'dir_typename'=>$irow['dir_typename']));
+            $index_cat[$firstcatval['catid']]['information'][] = $arr;
+        }
+    }
+}
+$tpl_index[classic][cats] = $tpl_index[classic][cats] ? $tpl_index[classic][cats]+1 : '12';
+{/php}-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+    <script src="{$mymps_global[SiteUrl]}/template/default/js/uaredirect.js" type="text/javascript"></script>
+    <script type="text/javascript">//uaredirect("{$mymps_global[SiteUrl]}/m/index.php?mod=index&cityid={$cityid}");</script>
+    <title>{$city[title]}</title>
+
+    <meta name="keywords" content="{$city[keywords]}"/>
+    <meta name="description" content="{$city[description]}"/>
+    <link rel="shortcut icon" href="{$mymps_global[SiteUrl]}/favicon.ico" />
+    <link rel="stylesheet" href="{$mymps_global[SiteUrl]}/template/default/css/style.head_{$mymps_global[head_style]}.css" />
+    <link rel="stylesheet" href="{$mymps_global[SiteUrl]}/template/default/css/index.head_{$mymps_global[head_style]}.css" />
+    <link rel="stylesheet" href="{$mymps_global[SiteUrl]}/template/default/css/index.css" />
+    <script src="{$mymps_global[SiteUrl]}/template/default/js/global.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{$mymps_global[SiteUrl]}/template/default/js/jquery1.42.min.js">
+    </script><script type="text/javascript" src="{$mymps_global[SiteUrl]}/template/default/js/jquery.SuperSlide.2.1.1.js"></script>
+
+</head>
+
+<body class="{$mymps_global[cfg_tpl_dir]} {$mymps_global[screen_index]} bodybg{$mymps_global[cfg_tpl_dir]}{$mymps_global[bodybg]}">
+
+{mytemplate inc_head}
+<div class="index_main">
+    <div class="index_div">
+        <div class="focusBox" >
+            <ul class="pic">
+                <!--{php $focus = mymps_get_focus('index',3,$city[cityid]);}-->
+                <!--{loop $focus $k $mymps}-->
+                <li><a href="{$mymps[url]}" target="_blank"><img src="{$mymps_global[SiteUrl]}{$mymps[image]}" alt="{$mymps[words]}"/></a></li>
+                <!--{/loop}-->
+            </ul>
+
+            <ul class="hd">
+                <!--{loop $focus $k $mymps}-->
+                <li></li>
+                <!--{/loop}-->
+            </ul>
+        </div>
+        <script type="text/javascript">
+            /*鼠标移过，左右按钮显示*/
+
+            /*SuperSlide图片切换*/
+            jQuery(".focusBox").slide({ mainCell:".pic",effect:"left", autoPlay:true, delayTime:600, trigger:"click"});
+        </script>
+        <div class="top_news">
+            <ul>
+                <!--{php $index_topinfo = mymps_get_infos($tpl_index['indextopinfo'],NULL,3,NULL,NULL,NULL,NULL,NULL,$cityid);}-->
+                <!--{loop $index_topinfo $mymps}-->
+                <li><span class="showtitle"><a title="{$mymps[title]}" target="_blank" href="{$mymps[uri]}" style="{if $mymps[ifred] == 1}color:red;{/if}{if $mymps[ifbold] == 1}font-weight:bold;{/if}">{echo mb_substr($mymps[title],0,16,'gbk')}</a></span></li>
+                <!--{/loop}-->
+            </ul>
+        </div>
+        <div class="slideTxtBox">
+            <div class="hd">
+                <ul><li>网站新闻</li><li>网站公告</li></ul>
+            </div>
+            <div class="bd">
+                <ul >
+                    <div id="content">
+                        <!--{php if(ifplugin('news')) $news = mymps_get_news($tpl_index['news']);}-->
+                        <!--{loop $news $mymps}-->
+                        <li><span class="date">{echo GetTime($mymps['begintime'],'m-d')}</span><a target="_blank" href="{$mymps[uri]}" title="{$mymps[title]}" {if $mymps['iscommend'] ==1}style="color:red"{/if}>{echo mb_substr($mymps[title],0,13,'gbk')}</a></li>
+                        <!--{/loop}-->
+                    </div>
+
+                </ul>
+
+                <ul>  <div id="content">
+                    <!--{php $announce = mymps_get_announce($tpl_index['announce'],$city['cityid']);}-->
+                    <!--{loop $announce $k $mymps}-->
+                    <li><span class="date">{echo GetTime($mymps['pubdate'],'m-d')}</span><a style="color:{$mymps['titlecolor']}" title="{$mymps['title']}" href="{$mymps['uri']}" target="_blank" >{echo mb_substr($mymps[title],0,14,'gbk')}</a></li>
+                    <!--{/loop}-->
+                </div>
+
+                </ul>
+
+            </div>
+        </div>
+        <script type="text/javascript">jQuery(".slideTxtBox").slide();</script>
+        <div class="index_btn">
+            <h1><a href="#">免费发布信息</a></h1>
+            <h2><a href="#">免费网上开店</a></h2>
+        </div>
+
+    </div>
+
+    {php $i=1;}
+    <!--{loop $index_cat $fcat}-->
+    <!--{if $i < $tpl_index[classic][cats]}-->
+    <div class="index_list {if $i%2 == 0}iright{/if}">
+        <div class="index_list_title">
+            {if $fcat[icon]}<img alt="{$fcat[catname]}" src="{$mymps_global[SiteUrl]}{$fcat[icon]}" align="absmiddle" width="48" height="48" />{/if}
+            <h1>{$fcat[catname]}</h1>
+            <h2><a href="{$fcat[uri]}" target="_blank">更多>></a></h2>
+            <h3><a href="{$mymps_global[SiteUrl]}/{$mymps_global[cfg_postfile]}?catid={$fcat[catid]}&cityid={$city[cityid]}" target="_blank">发信息</a></h3>
+        </div>
+        <div class="index_list_type">
+            <ul>
+                {loop $fcat['children'] $child}
+                <li><a href="{$child['uri']}">{$child['catname']}</a></li>
+                {/loop}
+            </ul>
+        </div>
+        <div class="index_list_con">
+            <ul>
+                <!--{loop $fcat[information] $info}-->
+                <li > <span class="itime">[{echo GetTime($info[begintime],'m-d')}]</span>
+                    <span class="info"><a href="{$info[uri]}" title="{$info[title]}">{$info[title]}</a></span>
+                </li>
+                <!--{/loop}-->
+            </ul>
+
+        </div>
+    </div>
+    <!--{/if}-->
+    {php $i++;}
+    <!--{/loop}-->
+    <!--{php $telephone = mymps_get_telephone($tpl_index[telephone],$city[cityid]);}-->
+    <div class="bbdh">
+        <div class="cdiv">
+            <div class="index_title"><h1>便民电话</h1><h2><span>以下便民电话招商：300/年，变色或加粗加100元。(可新增行业类别，每类别限一家，先占先得！)</span>　加盟电话：{$mymps_global[SiteTel]}</h2></div>
+            <ul>
+                <!--{loop $telephone $k $mymps}-->
+                <li><font style="color:{$mymps[color]};{if $mymps[if_bold] == 1}font-weight:bold{/if}">{$mymps[telname]}<br />{$mymps[telnumber]}</font></li>
+                <!--{/loop}-->
+            </ul>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="bbdh">
+        <div class="cdiv">
+            <div class="index_title">
+                <h1>友情链接</h1>
+                <h2><a href="{$about[friendlink_uri]}">我要申请</a></h2>
+            </div>
+
+            {if $friendlink[txt]}
+            <div class="index_link">
+                <!--{loop $friendlink[txt] $mymps}-->
+                <li><a href="{$mymps[url]}" target="_blank" title="{$mymps[name]}">{$mymps[name]}</a></li>
+                <!--{/loop}-->
+                <li><a href="http://zhideyao.cn" target="_blank">值得要交易平台</a></li>
+            </div>
+            {/if}
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<div class="foot">
+    <p>
+        <!--{php $navurl_foot = mymps_get_navurl('foot',30);}-->
+        <!--{php $counturlnav = count($navurl_foot);$i=1;}-->
+        <!--{loop $navurl_foot $k $mymps}-->
+        <a {if $counturlnav == $i}class="backnone"{/if} href="{$mymps[url]}" style="color:{$mymps[color]}" target="{$mymps[target]}">{$mymps[title]}<sup class="{$mymps[ico]}"></sup></a>
+        <!--{php $i=$i+1;}-->
+        <!--{/loop}-->
+    </p>
+    <p> Copyright ◎{echo GetTime($timestamp,'Y')} {$mymps_global[SiteName]}, All Rights Reserved. </p>
+    <p><img src="{$mymps_global[SiteUrl]}/template/default/images/index/foot.jpg" width="473" height="62" /></p>
+</div>
+</body>
+</html>

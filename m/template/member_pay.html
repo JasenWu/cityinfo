@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="index_page">
+<head>
+    {template header}
+    <title>我的发布 - {$mymps_global[SiteName]}</title>
+    <link type="text/css" rel="stylesheet" href="template/css/global.css">
+    <link type="text/css" rel="stylesheet" href="template/css/style.css">
+    <link type="text/css" rel="stylesheet" href="template/css/member.css">
+</head>
+
+<body class="{$mymps_global[cfg_tpl_dir]}">
+<div class="body_div">
+    <style type="text/css">
+        .select-list{
+            margin: 1rem auto;
+        }
+        #address{
+            margin: 1rem;
+        }
+        .formrow{
+            width: 20rem;
+            margin: auto;
+        }
+        #pay{
+            width: 20rem;
+            border-radius: 0.5rem;
+            background: -webkit-gradient(linear,0 0,0 100%,color-stop(0,#3592E2),color-stop(1,#3592E2));
+            color: #fff;
+            padding: 0.5rem;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        .app{
+            width: 100%;
+            height: 100%;
+        }
+        .summary{
+            height: 7rem;
+            background-color: #383838;
+            text-align: center;
+            color: #B6B6B6;
+            font-size: 0.8rem;
+        }
+        .summary div{
+            padding-top: 0.5rem;
+        }
+        .summary .title{
+            padding-top: 1rem;
+        }
+        .summary .room{
+            font-size: 0.7rem;
+        }
+        .summary .money{
+            color: #fff;
+            font-size: 2rem;
+        }
+        .bill_nav{
+            background-color: #EAE9DF;
+            height: 3rem;
+        }
+        .bill_nav .on{
+            border-bottom: 2px solid #F39605;
+            color: #000;
+        }
+        .bill_nav_item{
+            width: 49%;
+            height: 3rem;
+            line-height: 3rem;
+            display: inline-block;
+            font-size: 1rem;
+            text-align: center;
+            vertical-align: bottom;
+            text-decoration: none;
+            color: #9D9D9C;
+        }
+
+        .pay-type-list>div{
+            height: 3rem;
+            vertical-align: middle;
+            line-height: 3rem;
+            background-color: #fff;
+            padding-left: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .pay-type-list .item img{
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+    </style>
+    {template header_search}
+    <div class="app">
+        <div class="summary">
+            <div class="title">应缴金额</div>
+            <div class="money">{$total} 元</div>
+        </div>
+        <div class="bill">
+            <div class="bill_list">
+                <div class="pay-type-list">
+                    <div>请选择支付方式</div>
+                    <div class="item">
+                        <label>
+                            <input type="radio" class="pay_type" name="pay_type" value="4" />
+                            <img src="template/images/alipay.jpg" alt="支付宝" width="30rem"> 支付宝支付
+                        </label>
+
+                    </div>
+                    <div class="item">
+                        <label>
+                            <input type="radio" class="pay_type" name="pay_type" value="5" />
+                            <img src="template/images/wxpay.jpg" alt="微信" width="30rem"> 微信支付
+                        </label>
+                    </div>
+                </div>
+                </table>
+                <div class="formrow formrow-action" style="margin-top: 1rem;">
+                    <span class="minbtn-wrap"><span class="btn"><input type="button" id="pay" value="支 付" class="button" name="base_submit"></span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+{template footer}
+<script type="text/javascript" src="template/js/jq_min.211.js"></script>
+<script type="application/javascript">
+    $(function () {
+        $('#pay').click(function () {
+            var pay_type = $('input[name=pay_type]').filter(':checked').val();
+            if (pay_type == 4) {
+                window.location.href = '/pay.php?payid=4&id={$id}';
+            } else {
+                //alert('开发中...');
+                $.get('/pay.php?act=order&id={$id}',function (rsp) {
+                    if (rsp != 'error') {
+						var money = {$total} * 100;
+                        var ua = navigator.userAgent.toLowerCase();
+                        if (/iphone|ipad|ipod/.test(ua)) {
+							
+                            document.location="openWeixinPay:"+money+":"+rsp
+                        }else{
+                            applocal.openWeixinPay(""+money,rsp);
+                        }
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

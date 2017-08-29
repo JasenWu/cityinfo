@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="index_page">
+<head>
+    {template header}
+    <title>我的发布 - {$mymps_global[SiteName]}</title>
+    <link type="text/css" rel="stylesheet" href="template/css/global.css">
+    <link type="text/css" rel="stylesheet" href="template/css/style.css">
+    <link type="text/css" rel="stylesheet" href="template/css/member.css">
+</head>
+
+<body class="{$mymps_global[cfg_tpl_dir]}">
+<div class="body_div">
+    <style type="text/css">
+        select{
+            width: 100% !important;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            vertical-align: middle;
+            border: 1px solid #ccc;
+            background: #fff;
+            padding: 3px 5px;
+            margin-left: 2px;
+            height: 2.6rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.6rem;
+        }
+        .select-list{
+            margin: 1rem auto;
+        }
+		.button_submit {
+			width: 100%;
+			height: 42px;
+			line-height: 42px;
+			color: #fffefe;
+			text-align: center;
+			overflow: hidden;
+			border: none;
+			-webkit-border-radius: 0;
+			font-size: 14px;
+
+			    background: -webkit-gradient(linear,0 0,0 100%,color-stop(0,#3592E2),color-stop(1,#3592E2));
+		}
+        #address{
+            margin: 1rem;
+        }
+        .formrow{
+            width: 20rem;
+            margin: auto;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        .app{
+            width: 100%;
+            height: 100%;
+        }
+        .summary{
+            height: 7.5rem;
+            background-color: #383838;
+            text-align: center;
+            color: #B6B6B6;
+            font-size: 0.8rem;
+        }
+        .summary div{
+            padding-top: 0.5rem;
+        }
+        .summary .title{
+            padding-top: 1rem;
+        }
+        .summary .room{
+            font-size: 0.7rem;
+        }
+        .summary .money{
+            color: #fff;
+            font-size: 2rem;
+        }
+        .bill_nav{
+            background-color: #EAE9DF;
+            height: 3rem;
+        }
+        .bill_nav .on{
+            border-bottom: 2px solid #F39605;
+            color: #000;
+        }
+        .bill_nav_item{
+            width: 49%;
+            height: 3rem;
+            line-height: 3rem;
+            display: inline-block;
+            font-size: 1rem;
+            text-align: center;
+            vertical-align: bottom;
+            text-decoration: none;
+            color: #9D9D9C;
+        }
+        .bill_list{
+            margin: 0 1rem;
+        }
+        .bill_item{
+            padding: 0.5rem 0;
+            display: block;
+            border-bottom: 1px solid #ccc;
+            position: relative;
+        }
+        .bill_item div{
+            padding: 0.3rem 0;
+        }
+        .bill_item .date{
+            font-size: 1.5rem;
+        }
+        .bill_item .desc{
+            font-size: 0.8rem;
+        }
+        .bill_item .pay{
+            font-size: 1.2rem;
+            color: #DB4E28;
+            right: 1rem;
+            top: 1.2rem;
+            position: absolute;
+        }
+    </style>
+    {template header_search}
+    {if empty($room_id)}
+    <div class="select-list">
+        <div style="padding-left: 1rem">请选择您的地址：</div>
+        <div id="address">
+            <select name="province_id" id="province_id">
+                <option value="0">请选择</option>
+                {loop $province_list $item}
+                <option value="{$item['provinceid']}">{$item['provincename']}</option>
+                {/loop}
+            </select>
+        </div>
+        <div class="formrow formrow-action">
+            <span class="minbtn-wrap"><span class="btn"><input type="button" id="set_address" value="提 交" class="button_submit" name="base_submit"></span></span>
+        </div>
+    </div>
+    {else}
+    <div class="app">
+        <div class="summary">
+            <div class="title">未缴金额合计</div>
+            <div class="money">{$total}</div>
+            {if empty($room_id)}
+            <div class="room"></div>
+            {else}
+            <div class="room">地址：{echo get_address($room_id, 'room')} <a href="index.php?mod=property&newadd=true">[更换]</a></div>
+            {/if}
+        </div>
+        <div class="bill">
+            <div class="bill_nav">
+                <a href="index.php?mod=property&status=N" class="bill_nav_item {if $status == 'N'}on{/if}">未缴账单</a>
+                <a href="index.php?mod=property&status=Y" class="bill_nav_item {if $status == 'Y'}on{/if}">历史账单</a>
+            </div>
+            <div class="bill_list">
+                {loop $list $item}
+                {if $item['status'] == 'N'}
+                <a class="bill_item" href="index.php?mod=pay&id={$item['id']}">
+                    <div class="date">{echo date('Y年m月',strtotime($item['period']))}</div>
+                    {php $fee = $item['manage_fee']+$item['water_fee']+$item['electric_fee']+$item['other_fee']}
+                    <div class="desc">本期费用合计 {$fee}，本期未缴费用 {$fee}</div>
+                    <div class="pay">缴 费</div>
+                </a>
+                {else}
+                <a class="bill_item" href="javascript:void(0);">
+                    <div class="date">{echo date('Y年m月',strtotime($item['period']))}</div>
+                    {php $fee = $item['manage_fee']+$item['water_fee']+$item['electric_fee']+$item['other_fee']}
+                    <div class="desc">
+                        <span>管理费：{$item['manage_fee']}</span>
+                        <span>水费：{$item['water_fee']}</span>
+                        <span>电费：{$item['electric_fee']}</span>
+                        <span>其它费用：{$item['other_fee']}</span>
+                        <span> 合计 {$fee}</span>
+                    </div>
+                    <div class="pay">已 缴</div>
+                </a>
+                {/if}
+                {loopelse}
+                <div style="margin:30px 0;text-align:center">无记录</div>
+                {/loop}
+            </div>
+            {if $list}
+            <div class="pager" style="border-top:none; border-bottom:1px #ddd solid;">
+                {$pageview}
+            </div>
+            {/if}
+        </div>
+    </div>
+    {/if}
+{template footer}
+<script type="text/javascript" src="template/js/jq_min.211.js"></script>
+<script type="application/javascript">
+    $(function () {
+        $('#province_id').change(function () {
+            var that = $(this);
+            var data = {"do" : "city", "province_id" : $('#province_id').val()};
+            $.post('/address.php', data, function (rsp) {
+                var str = select_tpl('city', rsp);
+                that.nextAll().remove();
+                $('#address').append(str);
+            }, 'json')
+        });
+
+        $(document).on('change', '#city_id', function () {
+            var that = $(this);
+            var data = {"do" : "area", "city_id" : $(this).val()};
+            $.post('/address.php', data, function (rsp) {
+                var str = select_tpl('area', rsp);
+                that.nextAll().remove();
+                $('#address').append(str);
+            }, 'json')
+        });
+
+        $(document).on('change', '#area_id', function () {
+            var that = $(this);
+            var data = {"do": "building", "area_id": $(this).val()};
+            $.post('/address.php', data, function (rsp) {
+                var str = select_tpl('building', rsp);
+                that.nextAll().remove();
+                $('#address').append(str);
+            }, 'json')
+        });
+
+        $(document).on('change', '#building_id', function () {
+            var that = $(this);
+            var data = {"do": "room", "building_id": $(this).val()};
+            $.post('/address.php', data, function (rsp) {
+                var str = select_tpl('room', rsp);
+                that.nextAll().remove();
+                $('#address').append(str);
+            }, 'json')
+        });
+
+        $('#set_address').click(function () {
+            var room_id = $('#room_id').val();
+            if (room_id == undefined || room_id < 1) {
+                window.alert('您还未选择房间号哦');
+                return false;
+            }
+            var url = '/member/index.php?m=property&act=address';
+            var data = {"room_id": room_id};
+            $.post(url, data, function (rsp) {
+                if (rsp == 'ok') {
+                    window.location.href = '/m/index.php?mod=property&status=N';
+                } else {
+                    window.alert('设置失败');
+                }
+            });
+        });
+
+        function select_tpl(type, data) {
+            var tpl = '<select name="'+type+'_id" id="'+type+'_id">';
+            tpl += '<option value="">请选择</option>';
+            $.each(data, function (i,v) {
+                tpl += '<option value="'+ v.id+'">'+ v.name+'</option>';
+            });
+            tpl += '</select>';
+            return tpl;
+        }
+    })
+</script>
+</body>
+</html>

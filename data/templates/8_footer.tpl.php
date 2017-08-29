@@ -1,0 +1,48 @@
+<?php if(!defined('IN_MYMPS')) exit('Access Denied');
+/*Mymps分类信息系统
+官方网站：http://zhideyao.cn*/
+
+?>
+
+<div class="help">
+    <a href="index.php?mod=ad&cityid=<?=$city['cityid']?>" style="width: 135px" rel="nofollow">首页广告发布</a>
+<a href="index.php?mod=about&cityid=<?=$city['cityid']?>" rel="nofollow">联系我们</a>
+</div>
+<div class="footer" style="background-color:#F2F2F2">
+    <p class="footer_02">揭阳市大智房产中介服务有限公司</p>
+</div>
+<div style="height: 49px;"></div>
+<script type="text/javascript">
+/*$(function () {
+$("body").swipe( {
+swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+var mod = '<?=$mod?>';
+var catid = '<?=$catid?>';
+if (direction == 'left') {
+if(catid == '') {
+window.location.href = 'index.php?mod=category&catid=3&cityid=<?=$city['cityid']?>';
+} else if (catid == 3) {
+window.location.href = 'index.php?mod=category&catid=2&cityid=<?=$city['cityid']?>';
+} else if (catid == 2) {
+window.location.href = 'index.php?mod=category&catid=4&cityid=<?=$city['cityid']?>';
+} else if (catid == 4) {
+window.location.href = 'index.php?mod=property&status=N';
+}
+} else if (direction == 'right') {
+if (mod == 'property' || mod == 'login') {
+window.location.href = 'index.php?mod=category&catid=4&cityid=<?=$city['cityid']?>';
+} else {
+if (catid == 4) {
+window.location.href = 'index.php?mod=category&catid=2&cityid=<?=$city['cityid']?>';
+} else if (catid == 2) {
+window.location.href = 'index.php?mod=category&catid=3&cityid=<?=$city['cityid']?>';
+} else if (catid == 3) {
+window.location.href = 'index.php?mod=index&&cityid=<?=$city['cityid']?>';
+}
+}
+}
+},
+allowPageScroll:"auto"
+});
+});*/
+</script>
